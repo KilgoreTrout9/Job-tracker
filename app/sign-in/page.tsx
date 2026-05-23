@@ -1,37 +1,83 @@
-export default function SignIn() {
-  return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <main className="flex-1">
-        {/* Sign In Section */}
-        <section className="container mx-auto px-4 py-32">
-          <div className="mx-auto max-w-md text-center">
-            <h1 className="text-black mb-6 text-4xl font-bold">Sign in to your account</h1>
-            <p className="text-muted-foreground mb-10 text-lg">
-              Welcome back! Please enter your details to continue.
+"use client";
 
-            </p>
-            {/* Sign In Form */}
-            <form className="space-y-6">
-              <input
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+export default function SignIn() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  return (
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-white p-4">
+      <Card className="w-full max-w-md border-gray-200 shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-black">
+            Sign In
+          </CardTitle>
+          <CardDescription className="text-gray-600">
+            Enter your credentials to access your account and start tracking your job applications
+          </CardDescription>
+        </CardHeader>
+        <form className="space-y-4">
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-gray-700">
+                Email
+              </Label>
+              <Input 
+                id="email"
                 type="email"
-                placeholder="Email address"
-                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-primary focus:ring focus:ring-primary/50"
+                value={email}
+                placeholder="john.doe@example.com"
+                required
+                className="border-gray-300 focus:border-primary focus:ring-primary"
               />
-              <input
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-gray-700">
+                Password
+              </Label>
+              <Input 
+                id="password"
                 type="password"
-                placeholder="Password (8+ characters)"
-                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-primary focus:ring focus:ring-primary/50"
+                value={password}
+                placeholder="••••••••"
+                required
+                minLength={8}
+                className="border-gray-300 focus:border-primary focus:ring-primary"
               />
-              <button
-                type="submit"
-                className="w-full rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-              >
-                Sign In
-              </button>
-            </form>
-          </div>
-        </section>
-      </main>
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <Button 
+              type="submit"
+              className="w-full bg-primary hover:bg-primary/90"
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </Button>
+            <p className="text-center text-sm text-gray-600">
+              Need an account?{" "}
+              <Link 
+                href="/sign-up" 
+                className="font-medium text-primary hover:underline"
+                >
+                Sign Up
+              </Link>
+            </p>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   );
 }
