@@ -1,36 +1,128 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { signUp } from "@/lib/auth/auth-client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { resumeToPipeableStream } from "react-dom/server";
+
 export default function SignUp() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await signUp.email({ name, email, password });
+
+      if (result.error) {
+        setError(result.error.message || "Failed to sign up. Please try gain.");
+      } else {
+        router.push("/dashboard");
+      }
+
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <main className="flex-1">
-        {/* Sign Up Section */}
-        <section className="container mx-auto px-4 py-32">
-          <div className="mx-auto max-w-md text-center">
-            <h1 className="text-black mb-6 text-4xl font-bold">Create your account</h1>
-            <p className="text-muted-foreground mb-10 text-lg">
-              Join us and take control of your job search today.
-            </p>
-            {/* Sign Up Form */}
-            <form className="space-y-6">
-              <input
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-white p-4">
+      <Card className="w-full max-w-md border-gray-200 shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-black">
+            Sign Up
+          </CardTitle>
+          <CardDescription className="text-gray-600">
+            Create an account to start tracking your job applications
+          </CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <CardContent className="space-y-4">
+            {error && (
+              <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+                {error}
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-gray-700">
+                Name
+              </Label>
+              <Input 
+                id="name"
+                type="text"
+                value={name}
+                placeholder="John Doe"
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="border-gray-300 focus:border-primary focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-gray-700">
+                Email
+              </Label>
+              <Input 
+                id="email"
                 type="email"
-                placeholder="Email address"
-                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-primary focus:ring focus:ring-primary/50"
+                value={email}
+                placeholder="john.doe@example.com"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="border-gray-300 focus:border-primary focus:ring-primary"
               />
-              <input
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-gray-700">
+                Password
+              </Label>
+              <Input 
+                id="password"
                 type="password"
-                placeholder="Password (8+ characters)"
-                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-primary focus:ring focus:ring-primary/50"
+                value={password}
+                placeholder="••••••••"
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={8}
+                className="border-gray-300 focus:border-primary focus:ring-primary"
               />
-              <button
-                type="submit"
-                className="w-full rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-              >
-                Sign Up
-              </button>
-            </form>
-          </div>
-        </section>
-      </main>
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <Button 
+              type="submit"
+              className="w-full bg-primary hover:bg-primary/90"
+              disabled={loading}
+            >
+              {loading ? "Creating Account..." : "Sign Up"}
+            </Button>
+            <p className="text-center text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link 
+                href="/sign-in" 
+                className="font-medium text-primary hover:underline"
+                >
+                Sign In
+              </Link>
+            </p>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   );
 }
